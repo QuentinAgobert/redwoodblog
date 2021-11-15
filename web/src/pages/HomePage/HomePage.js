@@ -1,5 +1,5 @@
-import { Link, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
+import BlogPostsCell from 'src/components/BlogPostsCell'
 
 const HomePage = () => {
   return (
@@ -11,21 +11,7 @@ const HomePage = () => {
       You can look at this documentation for best practices : https://developers.google.com/search/docs/advanced/appearance/good-titles-snippets */
       />
 
-      <h1>HomePage</h1>
-      <p>
-        Find me in <code>./web/src/pages/HomePage/HomePage.js</code>
-      </p>
-      <p>
-        My default route is named <code>home</code>, link to me with `
-        <Link to={routes.home()}>Home</Link>`
-      </p>
-      <nav>
-        <ul>
-          <li>
-            <Link to={routes.about()}>About</Link>
-          </li>
-        </ul>
-      </nav>
+      <BlogPostsCell />
     </>
   )
 }

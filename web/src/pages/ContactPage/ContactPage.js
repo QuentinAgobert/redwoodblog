@@ -1,15 +1,36 @@
 import {
   FieldError,
   Form,
+  FormError,
   Label,
   Submit,
   TextAreaField,
   TextField,
+  useForm,
 } from '@redwoodjs/forms'
-import { MetaTags } from '@redwoodjs/web'
+import { MetaTags, useMutation } from '@redwoodjs/web'
+import toast, { Toaster } from 'react-hot-toast'
+
+const CREATE_CONTACT = gql`
+  mutation CreateContactMutation($input: CreateContactInput!) {
+    createContact(input: $input) {
+      id
+    }
+  }
+`
 
 const ContactPage = () => {
+  const formMethods = useForm({ mode: 'onBlur' })
+
+  const [create, { loading, error }] = useMutation(CREATE_CONTACT, {
+    onCompleted: () => {
+      toast.success('Thank you for your submission!')
+      formMethods.reset()
+    },
+  })
+
   const onSubmit = (data) => {
+    create({ variables: { input: data } })
     console.log(data)
   }
 
@@ -22,7 +43,23 @@ const ContactPage = () => {
       You can look at this documentation for best practices : https://developers.google.com/search/docs/advanced/appearance/good-titles-snippets */
       />
 
-      <Form onSubmit={onSubmit} config={{ mode: 'onBlur' }}>
+      <Toaster />
+      <Form
+        onSubmit={onSubmit}
+        config={{ mode: 'onBlur' }}
+        error={error}
+        formMethods={formMethods}
+      >
+        <FormError
+          error={error}
+          wrapperStyle={{ color: 'red', backgroundColor: 'lavenderblush' }}
+        />
+        {/* {error && (
+          <div style={{ color: 'red' }}>
+            {"We couldn't send your message: "}
+            {error.message}
+          </div>
+        )} */}
         <Label htmlFor="name" errorClassName="error">
           Name
         </Label>
@@ -40,10 +77,10 @@ const ContactPage = () => {
           name="email"
           validation={{
             required: true,
-            pattern: {
-              value: /[^@]+@[^.]+\..+/,
-              message: 'Please enter a valid email address',
-            },
+            // pattern: {
+            //   value: /[^@]+@[^.]+\..+/,
+            //   message: 'Please enter a valid email address',
+            // },
           }}
           errorClassName="error"
         />
@@ -59,7 +96,7 @@ const ContactPage = () => {
         />
         <FieldError name="message" className="error" />
 
-        <Submit>Save</Submit>
+        <Submit disabled={loading}>Save</Submit>
       </Form>
     </>
   )
